@@ -27,7 +27,7 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-
+master_doc = "index"
 # -- Options for HTML output -------------------------------------------------
 
 html_theme = 'alabaster'  # you can also use 'sphinx_rtd_theme' if installed

@@ -1,0 +1,21 @@
+name: 🐍 Python CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*" # e.g., v1.0.0
+  pull_request:
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  lint:
+    name: 🧹 Lint
+    uses: ./.github/workflows/_lint.yml
+    with:
+      working-directory: .
+      python-version: "3.12"

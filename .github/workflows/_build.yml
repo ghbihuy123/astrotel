@@ -1,0 +1,40 @@
+name: 📦 Build Package
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        required: true
+        type: string
+        description: "From which folder this pipeline executes"
+      python-version:
+        required: true
+        type: string
+        description: "Python version to use"
+
+jobs:
+  build:
+    name: 📦 Build (Python ${{ inputs.python-version }})
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - name: 📋 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: '🐍 Set up Python ${{ inputs.python-version }} + UV'
+        uses: "./.github/actions/uv_setup"
+        with:
+          python-version: ${{ inputs.python-version }}
+          cache-suffix: lint-${{ inputs.working-directory }}
+          working-directory: ${{ inputs.working-directory }}
+
+      - name: 🔨 Build Wheel and sdist
+        run: make build
+
+      - name: 📤 Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: ${{ inputs.working-directory }}/dist/*

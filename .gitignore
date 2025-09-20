@@ -4,3 +4,4 @@
 .vscode
 *pycache*
 **/.ruff_cache
+**/dist

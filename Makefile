@@ -8,5 +8,8 @@ lint_test:
 test:
 	echo "Run unittest"
 
+build:
+	uv build
+
 format:
 	uvx ruff format .

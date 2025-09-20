@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - dev
+      - release/*
     tags:
       - "v*" # e.g., v1.0.0
   pull_request:
@@ -35,3 +37,9 @@ jobs:
     with:
       working-directory: .
       python-version: "3.12"
+
+  release:
+    # if: github.ref == 'refs/heads/main'
+    name: 🚀 Release
+    uses: ./.github/workflows/_release.yml
+    needs: build

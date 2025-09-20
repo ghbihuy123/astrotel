@@ -5,5 +5,8 @@ lint:
 lint_test:
 	echo "Lint tests"
 
+test:
+	echo "Run unittest"
+
 format:
 	uvx ruff format .

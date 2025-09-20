@@ -25,6 +25,9 @@ fastapi = [
 dev = [
     "fastapi>=0.116.1",
 ]
+lint = [
+    "ruff>=0.13.1",
+]
 
 [build-system]
 requires = ["hatchling"]

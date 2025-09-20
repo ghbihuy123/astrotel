@@ -28,6 +28,9 @@ dev = [
 lint = [
     "ruff>=0.13.1",
 ]
+test = [
+    "pytest>=8.4.2",
+]
 
 [build-system]
 requires = ["hatchling"]

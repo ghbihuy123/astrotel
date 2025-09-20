@@ -19,3 +19,11 @@ jobs:
     with:
       working-directory: .
       python-version: "3.12"
+
+  test:
+    name: ✅ Tests
+    uses: ./.github/workflows/_test.yml
+    needs: lint
+    with:
+      working-directory: .
+      python-version: "3.12"

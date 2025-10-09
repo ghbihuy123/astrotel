@@ -13,28 +13,25 @@ from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, SpanExporter
 
-from astrotel.config import AstrotelSettings
+from astrotel.config import AstrotelSettings, astrotel_default
 from astrotel.error import InvalidOtelModeError
 
 
-settings = AstrotelSettings()
-
 class OtelTracingBase(ABC):
-    service_name: str = settings.service_name
-    environment: str = settings.deployment_environment
-    otel_mode: str = settings.mode
-    otel_grpc_endpoint: str = settings.grpc_endpoint
-    otel_http_endpoint: str = settings.http_endpoint
+    _settings: AstrotelSettings
     tracer_provider: TracerProvider
     logger_provider: LoggerProvider
-    logs_ship_level: str = settings.logs_ship_level
-    def __init__(self):
+    def __init__(
+        self,
+        settings: AstrotelSettings = astrotel_default
+    ):
+        self._settings = settings
         # Init resource with name and deploy environment
         resource = Resource.create({
-            'service.name': self.service_name,
-            'deployment.environment': self.environment,
+            'service.name': settings.service_name,
+            'deployment.environment': settings.deployment_environment,
         })
 
         # Init self.tracer_provider
@@ -47,27 +44,29 @@ class OtelTracingBase(ABC):
         log_exporter = self._get_logs_exporter()
         self.logger_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
 
-    def _get_trace_exporter(self):
+    def _get_trace_exporter(self) -> SpanExporter:
+        settings = self._settings
         """Init trace exporter"""
-        if self.otel_mode == 'grpc':
-            exporter = GrpcTraceExporter(endpoint=self.otel_grpc_endpoint, insecure=True)
-        elif self.otel_mode == 'http':
-            exporter = HttpTraceExporter(endpoint=self.otel_http_endpoint)
+        if settings.mode == 'grpc':
+            exporter = GrpcTraceExporter(endpoint=settings.grpc_endpoint, insecure=True)
+        elif settings.mode == 'http':
+            exporter = HttpTraceExporter(endpoint=settings.http_endpoint)
         else:
             raise InvalidOtelModeError(
-                f"Unsupported OTEL mode: {self.otel_mode!r}. Expected 'grpc' or 'http'."
+                f"Unsupported OTEL mode: {settings.mode!r}. Expected 'grpc' or 'http'."
             )
         return exporter
 
-    def _get_logs_exporter(self):
+    def _get_logs_exporter(self) -> SpanExporter:
         """Init logs exporter"""
-        if self.otel_mode == 'grpc':
-            exporter = GrpcLogExporter(endpoint=self.otel_grpc_endpoint, insecure=True)
-        elif self.otel_mode == 'http':
-            exporter = HttpLogExporter(endpoint=self.otel_http_endpoint)
+        settings = self._settings
+        if settings.mode == 'grpc':
+            exporter = GrpcLogExporter(endpoint=settings.grpc_endpoint, insecure=True)
+        elif settings.mode == 'http':
+            exporter = HttpLogExporter(endpoint=settings.http_endpoint)
         else:
             raise InvalidOtelModeError(
-                f"Unsupported OTEL mode: {self.otel_mode!r}. Expected 'grpc' or 'http'."
+                f"Unsupported OTEL mode: {settings.mode!r}. Expected 'grpc' or 'http'."
             )
         return exporter
 
@@ -76,5 +75,5 @@ class OtelTracingBase(ABC):
         pass
 
     def configure_logging_handler(self) -> LoggingHandler:
-        level = getattr(logging, self.logs_ship_level, logging.INFO)
+        level = getattr(logging, self._settings.logs_ship_level, logging.INFO)
         return LoggingHandler(level=level, logger_provider=self.logger_provider)

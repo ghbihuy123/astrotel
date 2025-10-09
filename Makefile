@@ -1,6 +1,6 @@
 lint:
-	uvx ruff check
-	uvx ruff check --fix-only .
+	uvx ruff check .
+	uvx ruff check . --fix
 
 lint_test:
 	echo "Lint tests"

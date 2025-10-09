@@ -14,3 +14,5 @@ class AstrotelSettings(BaseSettings):
     class Config:
         env_file = ".env"
         env_prefix = "OTEL_"
+
+astrotel_default = AstrotelSettings()

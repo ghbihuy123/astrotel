@@ -90,6 +90,3 @@ make -C docs html
 
 - Lint: `make lint`
 - Format: `make format`
-
-## License
-MIT

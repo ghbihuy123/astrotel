@@ -4,6 +4,11 @@ permissions:
   contents: write
   id-token: write
 
+on:
+  push:
+    tags:
+      - "v*"        # Trigger only on version tags, e.g., v1.0.0
+
 jobs:
   build:
     uses: ./.github/workflows/_build.yml

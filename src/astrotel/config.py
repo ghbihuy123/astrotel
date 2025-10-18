@@ -13,6 +13,6 @@ class AstrotelSettings(BaseSettings):
     logs_ship_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     class Config:
         env_file = ".env"
-        env_prefix = "OTEL_"
+        env_prefix = "ASTROTEL_"
 
 astrotel_default = AstrotelSettings()
